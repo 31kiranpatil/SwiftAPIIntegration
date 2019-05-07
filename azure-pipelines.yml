@@ -94,3 +94,35 @@ steps:
     contents: '**/*.ipa'
     targetFolder: '$(build.artifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
+# App Center Distribute
+# Distribute app builds to testers and users via App Center
+- task: AppCenterDistribute@1
+  inputs:
+    serverEndpoint: 
+    appSlug: 
+    appFile: 
+    #symbolsOption: 'Apple' # Optional. Options: apple
+    #symbolsPath: # Optional
+    #symbolsPdbFiles: '**/*.pdb' # Optional
+    #symbolsDsymFiles: # Optional
+    #symbolsMappingTxtFile: # Optional
+    #symbolsIncludeParentDirectory: # Optional
+    #releaseNotesOption: 'input' # Options: input, file
+    #releaseNotesInput: # Required when releaseNotesOption == Input
+    #releaseNotesFile: # Required when releaseNotesOption == File
+    #isMandatory: false # Optional
+    #distributionGroupId: # Optional
+    - task: AppStoreRelease@1
+  displayName: 'Publish to the App Store TestFlight track'
+  inputs:
+    serviceEndpoint: 'My Apple App Store service connection' # This service connection must be added by you
+    appIdentifier: com.yourorganization.testapplication.etc
+    ipaPath: '$(build.artifactstagingdirectory)/**/*.ipa'
+    shouldSkipWaitingForProcessing: true
+    shouldSkipSubmission: true
+    - task: AppStorePromote@1
+  displayName: 'Submit to the App Store for review'
+  inputs:
+    serviceEndpoint: 'My Apple App Store service connection' # This service connection must be added by you
+    appIdentifier: com.yourorganization.testapplication.etc
+    shouldAutoRelease: false
