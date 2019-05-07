@@ -17,3 +17,7 @@ Reachability
 Waiting Wheel 
 
 Textfield auto Scrolling 
+
+Yml file is added to project 
+
+demo is running 
