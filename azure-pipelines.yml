@@ -1,128 +1,19 @@
-# https://docs.microsoft.com/azure/devops/pipelines/languages/xcode
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
 pool:
-  vmImage: 'macOS-10.13'
-  variables:
-  scheme: ''
-  sdk: 'iphoneos'
-  configuration: 'Release'
+  vmImage: 'Ubuntu-16.04'
 
 steps:
-- task: Xcode@5
-  inputs:
-    sdk: '$(sdk)'
-    scheme: '$(scheme)'
-    configuration: '$(configuration)'
-    xcodeVersion: 'default' # Options: default, 10, 9, 8, specifyPath
-    exportPath: '$(agent.buildDirectory)/output/$(sdk)/$(configuration)'
-    packageApp: false
-    # The `certSecureFile` and `provProfileSecureFile` files are uploaded to the Azure Pipelines secure files library where they are encrypted.
-# The `P12Password` variable is set in the Azure Pipelines pipeline editor and marked 'secret' to be encrypted.
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
 
-- task: InstallAppleCertificate@2
-  inputs:
-    certSecureFile: 'chrisid_iOSDev_Nov2018.p12'
-    certPwd: $(P12Password)
-
-- task: InstallAppleProvisioningProfile@1
-  inputs:
-    provProfileSecureFile: '6ffac825-ed27-47d0-8134-95fcf37a666c.mobileprovision'
-
-- task: Xcode@5
-  inputs:
-    actions: 'build'
-    scheme: ''
-    sdk: 'iphoneos'
-    configuration: 'Release'
-    xcWorkspacePath: '**/*.xcodeproj/project.xcworkspace'
-    xcodeVersion: 'default' # Options: 8, 9, 10, default, specifyPath
-    signingOption: 'default' # Options: nosign, default, manual, auto
-    useXcpretty: 'false' # Makes it easier to diagnose build failures
-    - script: /usr/local/bin/pod install
-  displayName: 'pod install using a script'
-
-- task: CocoaPods@0
-  displayName: 'pod install using the CocoaPods task with defaults'
-
-- task: CocoaPods@0
-  inputs:
-    forceRepoUpdate: true
-    projectDirectory: '$(system.defaultWorkingDirectory)'
-  displayName: 'pod install using the CocoaPods task with a forced repo update and a custom project directory'
-  # App Center Test
-# Test app packages with Visual Studio App Center.
-- task: AppCenterTest@1
-  inputs:
-    appFile: 
-    #artifactsDirectory: '$(Build.ArtifactStagingDirectory)/AppCenterTest' 
-    #prepareTests: true # Optional
-    #frameworkOption: 'appium' # Required when prepareTests == True# Options: appium, espresso, calabash, uitest, xcuitest
-    #appiumBuildDirectory: # Required when prepareTests == True && Framework == Appium
-    #espressoBuildDirectory: # Optional
-    #espressoTestApkFile: # Optional
-    #calabashProjectDirectory: # Required when prepareTests == True && Framework == Calabash
-    #calabashConfigFile: # Optional
-    #calabashProfile: # Optional
-    #calabashSkipConfigCheck: # Optional
-    #uiTestBuildDirectory: # Required when prepareTests == True && Framework == Uitest
-    #uitestStorePath: # Optional
-    #uiTestStorePassword: # Optional
-    #uitestKeyAlias: # Optional
-    #uiTestKeyPassword: # Optional
-    #uiTestToolsDirectory: # Optional
-    #signInfo: # Optional
-    #xcUITestBuildDirectory: # Optional
-    #xcUITestIpaFile: # Optional
-    #prepareOptions: # Optional
-    #runTests: true # Optional
-    #credentialsOption: 'serviceEndpoint' # Required when runTests == True# Options: serviceEndpoint, inputs
-    #serverEndpoint: # Required when runTests == True && CredsType == ServiceEndpoint
-    #username: # Required when runTests == True && CredsType == Inputs
-    #password: # Required when runTests == True && CredsType == Inputs
-    #appSlug: # Required when runTests == True
-    #devices: # Required when runTests == True
-    #series: 'master' # Optional
-    #dsymDirectory: # Optional
-    #localeOption: 'en_US' # Required when runTests == True# Options: da_DK, nl_NL, en_GB, en_US, fr_FR, de_DE, ja_JP, ru_RU, es_MX, es_ES, user
-    #userDefinedLocale: # Optional
-    #loginOptions: # Optional
-    #runOptions: # Optional
-    #skipWaitingForResults: # Optional
-    #cliFile: # Optional
-    #showDebugOutput: # Optional
-    - task: CopyFiles@2
-  inputs:
-    contents: '**/*.ipa'
-    targetFolder: '$(build.artifactStagingDirectory)'
-- task: PublishBuildArtifacts@1
-# App Center Distribute
-# Distribute app builds to testers and users via App Center
-- task: AppCenterDistribute@1
-  inputs:
-    serverEndpoint: 
-    appSlug: 
-    appFile: 
-    #symbolsOption: 'Apple' # Optional. Options: apple
-    #symbolsPath: # Optional
-    #symbolsPdbFiles: '**/*.pdb' # Optional
-    #symbolsDsymFiles: # Optional
-    #symbolsMappingTxtFile: # Optional
-    #symbolsIncludeParentDirectory: # Optional
-    #releaseNotesOption: 'input' # Options: input, file
-    #releaseNotesInput: # Required when releaseNotesOption == Input
-    #releaseNotesFile: # Required when releaseNotesOption == File
-    #isMandatory: false # Optional
-    #distributionGroupId: # Optional
-    - task: AppStoreRelease@1
-  displayName: 'Publish to the App Store TestFlight track'
-  inputs:
-    serviceEndpoint: 'My Apple App Store service connection' # This service connection must be added by you
-    appIdentifier: com.yourorganization.testapplication.etc
-    ipaPath: '$(build.artifactstagingdirectory)/**/*.ipa'
-    shouldSkipWaitingForProcessing: true
-    shouldSkipSubmission: true
-    - task: AppStorePromote@1
-  displayName: 'Submit to the App Store for review'
-  inputs:
-    serviceEndpoint: 'My Apple App Store service connection' # This service connection must be added by you
-    appIdentifier: com.yourorganization.testapplication.etc
-    shouldAutoRelease: false
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
